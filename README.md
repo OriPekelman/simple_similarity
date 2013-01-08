@@ -49,9 +49,9 @@ is a cutoff ratio for the detected similarities (0.5 is quite similar, above
      :score=>0.5833333333333333}]} 
 
 ### Caveat : 
-1. this algorithm costs (n^2/2) - n in time and n^2 in memory
->So if n= 100,000 
-> there will be 4,999,900,000 calculations
+1. The algorithm for calculating the distance matrix  costs (n^2/2) - n in time and n^2 in memory
+> So if n = 100,000 
+> there will be 4,999,900,000 calculations (and each is very expensive.. we are zipping)
 2. setting only_hits to true does not return the matrix only the hits but optimizes memory usage.
 ### Note:
 the matrix can be used later for clustering....     
@@ -64,7 +64,7 @@ spec:
 
 Benchmark:
 
-On my machine comparing 100 items takes around 8 seconds: 
+On my machine comparing 100 items takes around 8 seconds, comaring 1000 items around 20 minutes...: 
     
     bundle exec ruby spec/benchmark.rb
 
