@@ -3,16 +3,17 @@ require "benchmark"
  
 a = []
 CHARS = (?a..?z).to_a + ["e","e","e","e","e","a","a","a","a","a","a","a","a","a","a","a","a"]
-1000.times {a.push(5.times.inject("") {|s, i| s << CHARS[rand(CHARS.size)]})}
-
+100.times {a.push(5.times.inject("") {|s, i| s << CHARS[rand(CHARS.size)]})}
+@ssd = SimpleSimilarity::Distance.new
 time = Benchmark.measure do
-  puts SimpleSimilarity::SimpleSimilarity.distance_matrix(a, 0.5, false, true)[:similar_terms]
+  puts @ssd.matrix(a)
 end
 puts "Without matrix"
 puts time
 
 time = Benchmark.measure do
-  puts SimpleSimilarity::SimpleSimilarity.distance_matrix(a, 0.5, false, false)[:similar_terms]
+  puts @ssd.matrix(a)
 end
+
 puts "With matrix"
 puts time
