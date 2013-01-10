@@ -35,7 +35,7 @@ describe SimpleSimilarity::Distance do
   end
   
   it "from : hello world, Hello world, hell world, world, cruel, crude with a cutoff of 0.5 we should have seven couples case insensitive" do
-    @sd = SimpleSimilarity::Distance.new(0.5, true)    
+    @sd = SimpleSimilarity::Distance.new(0.5, false)    
     @sd.matrix(%w( hello world, Hello world, hell world, world, cruel, crude))[:similar_terms].length.should eql(7)
   end
   

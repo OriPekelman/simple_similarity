@@ -53,6 +53,27 @@ is a cutoff ratio for the detected similarities (0.5 is quite similar, above
 >So if n= 100,000 
 > there will be 4,999,900,000 calculations
 2. setting only_hits to true does not return the matrix only the hits but optimizes memory usage.
+
+##Benchmark  for 200 elements of 5 characters
+    jruby 1.6.7.2 (ruby-1.9.2-p312) (2012-05-01 26e08ba) (Java HotSpot(TM) 64-Bit Server VM 1.6.0_37) [darwin-x86_64-java]
+                         user     system      total        real
+    Without Celluloid:   7.853000   0.000000   7.853000 (  7.853000)
+    With Celluloid:      8.090000   0.000000   8.090000 (  8.090000)
+
+    jruby 1.7.0.preview1 (ruby-1.9.3-p203) (2012-05-19 00c8c98) (Java HotSpot(TM) 64-Bit Server VM 1.6.0_37) [darwin-x86_64-java]
+                         user     system      total        real
+    Without Celluloid:   9.250000   1.590000  10.840000 (  8.122000)
+    With Celluloid:      9.220000   1.580000  10.800000 (  8.028000)    
+    
+    ruby 1.9.3p194 (2012-04-20 revision 35410) [x86_64-darwin11.4.0]
+                        user     system      total        real
+    Without Celluloid:  58.110000   1.550000  59.660000 ( 59.454541)
+    With Celluloid:     63.560000   1.830000  65.390000 ( 66.925758)
+
+    rubinius 2.0.0.rc1 (1.9.3 8be92cf7 yyyy-mm-dd JI) [x86_64-apple-darwin11.4.2]
+                        user     system      total        real
+    Without Celluloid:  18.106721   7.685257  25.791978 ( 15.934246)
+    With Celluloid:  15.382614   7.284773  22.667387 ( 15.720565)  
 ### Note:
 the matrix can be used later for clustering....     
 

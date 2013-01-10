@@ -10,15 +10,19 @@ module SimpleSimilarity
 
     #calculate similarity by comparing the length of compressed(a) + length of
     #compressed (b) to the lengt of compressed (a and b concatenated)
-    def distance(a, b)
+    def distance(a, b, case_insensitive = false)      
       a = a.to_s
       b = b.to_s
-
+      
+      if case_insensitive
+        a = normalize(a)
+        b = normalize(b)
+      end
       # optimization: well if they are equal lets not do expensive stuff
-      if a==b then return 1.0 end
+      return 1.0 if a==b 
       
       # optimization: if one is empty and the other not they are totally different
-      if ((a.empty? && !b.empty?) || (b.empty? && !a.empty?)) then return (0.to_f)  end
+      return (0.to_f) if ((a.empty? && !b.empty?) || (b.empty? && !a.empty?))
         
       # This is hacky, but useful. When strings are too short the compression
       # is not sufficient.
@@ -40,11 +44,10 @@ module SimpleSimilarity
      aplusbzip    =    (@zlib.finish.length) - minimal_zip_length
      ((azip + bzip).to_f/aplusbzip.to_f) - 1 # -1 is because something that is totally different will get 1.00 totally the same 2.00. 
     end
-  
-    #Normalize the string, downcase remove non alphanumeric characters
-    def case_insensitive_distance(a, b)
-       self.distance(a.downcase.gsub(/[^[:alnum:]]/, ' '), b.downcase.gsub(/[^[:alnum:]]/, ' '))
-    end  
+    private
+    def normalize(term)
+      term.downcase.gsub(/[^[:alnum:]]/, ' ')
+    end
   end
   
   class Distance     
@@ -54,7 +57,7 @@ module SimpleSimilarity
       @only_hits = only_hits
       @ss = SimpleSimilarity.new
       @sims = []
-
+      @celluloid = celluloid
     end 
     
     # This method will return a distance matrix as well as matches beyond a supplies threshold
@@ -81,18 +84,25 @@ module SimpleSimilarity
       dist = 0.to_f
       for i in 0..len
         for j in i+1..len -1
-
-        if @case_insensitive then
-          dist = @ss.future.case_insensitive_distance(arr[i], arr[j])
-        else
-          dist = @ss.future.distance(arr[i], arr[j])
-        end
+        
+          if @celluloid
+            dist = @ss.future.distance(arr[i], arr[j], @case_insensitive)
+          else
+            dist = @ss.distance(arr[i], arr[j], @case_insensitive)
+          end          
+          update_matrix(i, j, dist) unless @only_hits 
           
-         push_to_similar(i,j,arr,dist.value)      
-         update_matrix(i,j,dist.value) unless @only_hits
-         
        end
-      end  
+      end 
+      
+      for i in 0..len
+        for j in i+1..len -1
+          dist = @mat[i][j]
+          update_matrix(i, j, val(dist)) unless @only_hits          
+          push_to_similar(i, j, arr, val(dist))      
+       end
+      end      
+       
       {:matrix=>@mat,:similar_terms=>@sims}
     end
     
@@ -103,5 +113,10 @@ module SimpleSimilarity
     def update_matrix(i,j,dist)
       @mat[i][j] = dist
     end
+    private
+    def val(val)
+     @celluloid ? val.value : val
+    end
+    
   end
 end
