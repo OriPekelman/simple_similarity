@@ -1,7 +1,6 @@
 require "simple_similarity/version"
 require "zlib"
 require "celluloid"
-require 'pry'
 
 module SimpleSimilarity
   
